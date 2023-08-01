@@ -822,6 +822,8 @@ CFLAGS += -DRETRO_PROFILE=$(RETRO_PROFILE)
 # Disable optimization when debugging #####################
 ifeq ($(DEBUG), 1)
 	CFLAGS += -O0 -g3
+else ifeq ($(platform), emscripten)
+	CFLAGS += -O3 -DNDEBUG
 else
 	CFLAGS += -O2 -DNDEBUG
 endif
