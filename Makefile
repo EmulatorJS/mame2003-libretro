@@ -6,6 +6,7 @@ DEBUGGER      ?= 0
 SPLIT_UP_LINK ?= 0
 ARM           ?= 0 # set to 0 or 1 to indicate ARM or not
 CPU_ARCH      ?= 0 # as of November 2018 this flag doesn't seem to be used but is being set to either arm or arm64 for some platforms
+EMULATORJS_THREADS ?= 0
 
 LIBS          ?=
 
@@ -531,6 +532,11 @@ else ifeq ($(platform), emscripten)
 	HAVE_RZLIB := 1
 	STATIC_LINKING := 1
 	PLATCFLAGS += -D__EMSCRIPTEN__
+	ifeq ($(EMULATORJS_THREADS), 1)
+		LDFLAGS += -pthread
+		CFLAGS += -pthread
+		CXXFLAGS += -pthread
+	endif
 
 # Windows MSVC 2003 Xbox 1
 else ifeq ($(platform), xbox1_msvc2003)
