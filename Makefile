@@ -520,11 +520,14 @@ else ifeq ($(platform), miyoo)
 	CC = /opt/miyoo/usr/bin/arm-linux-gcc
 	CXX = /opt/miyoo/usr/bin/arm-linux-g++
 	AR = /opt/miyoo/usr/bin/arm-linux-ar
-	fpic := -fPIC
+	fpic := -fno-PIC
 	LDFLAGS += -shared -Wl,--version-script=link.T -Wl,-no-undefined
 	PLATCFLAGS := -DNO_UNALIGNED_ACCESS
 	PLATCFLAGS += -fomit-frame-pointer -march=armv5te -mtune=arm926ej-s -ffast-math
 	CXXFLAGS += -fno-rtti -fno-exceptions
+	ARM = 1
+	USE_CYCLONE := 1
+	USE_DRZ80 := 1
 
 # Emscripten
 else ifeq ($(platform), emscripten)
@@ -761,7 +764,7 @@ else
 	LDFLAGS += -shared -static-libgcc -static-libstdc++
 	ifneq ($(DEBUG), 1)
 	LDFLAGS += -s
-	endif  
+	endif
 	LDFLAGS += -Wl,--version-script=link.T
 	CFLAGS += -D__WIN32__
 endif
@@ -811,6 +814,11 @@ CFLAGS += -DHAVE_LANGINFO_CODESET
 CFLAGS += -DHAVE_SOCKLEN_T
 CFLAGS += -D_LARGEFILE_SOURCE
 CFLAGS += -D_FILE_OFFSET_BITS=64
+
+# make gcc fail like msvc does
+ifeq (,$(findstring msvc,$(platform)))
+	CFLAGS += -Werror=vla -Werror=declaration-after-statement
+endif
 
 # Required for RZIP support in cheat.c
 CFLAGS += -DHAVE_ZLIB
